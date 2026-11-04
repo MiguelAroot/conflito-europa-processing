@@ -2,12 +2,6 @@
 
 Protótipo inicial de um jogo de estratégia territorial feito em **Processing (modo Java)** para a disciplina de Algoritmos e Estruturas de Dados.
 
-## Como executar
-
-1. Instale o [Processing](https://processing.org/download).
-2. Abra o arquivo `Conflito_Europa/Conflito_Europa.pde` no Processing, no modo Java.
-3. Pressione **Executar** (▶).
-
 ## Controles
 
 - Clique em um país e depois em um país vizinho para tentar conquistar seu território.
