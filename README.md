@@ -1,5 +1,11 @@
 # Conflito de Fronteiras — Europa
 
+## Versão atual — Europa em disputa
+
+Abra [`EuropaEmDisputa/EuropaEmDisputa.pde`](EuropaEmDisputa/EuropaEmDisputa.pde) no Processing 4, em modo Java. A versão atual tem mapa real com 30 países, tela cheia e conquistas por país. Os controles e as regras estão no [guia da versão atual](EuropaEmDisputa/README.md).
+
+## Protótipo inicial
+
 Protótipo de jogo de estratégia territorial em **Processing (modo Java)** para Algoritmos e Estruturas de Dados.
 
 Não usa bibliotecas extras nem imagens externas.
