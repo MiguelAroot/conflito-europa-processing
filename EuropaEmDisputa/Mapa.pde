@@ -81,12 +81,13 @@ void selecionarNoMapa(float xTela, float yTela) {
   selecionarRegiao(2 * pais + (dist(x, y, n.x, n.y) <= dist(x, y, s.x, s.y) ? 0 : 1));
 }
 
-void desenharMapa(Partida.Quadro quadro, Partida.Acao ataque) {
+void desenharMapa(Historico.Quadro quadro, Partida.Acao ataque) {
   atualizarCoresDoMapa(quadro);
   pushStyle();
   noStroke();
   fill(0xffd8e8ed);
   rect(X_MAPA, Y_MAPA, W_MAPA, H_MAPA);
+  clip(X_MAPA, Y_MAPA, W_MAPA, H_MAPA);
   pushMatrix();
   translate(mapaX, mapaY);
   scale(escalaMapa);
@@ -100,16 +101,17 @@ void desenharMapa(Partida.Quadro quadro, Partida.Acao ataque) {
   }
   contornar(regiaoFoco / 2, 0xff382c24, 1.65f);
 
+  boolean consultandoRota = aba == ABA_ROTAS;
   for (Grafo.Aresta a : grafo.arestas()) {
     boolean adjacente = a.a() == regiaoFoco || a.b() == regiaoFoco;
-    if (!grafoCompleto && (!adjacente || partida.vencedor() != -1)) continue;
+    if (!grafoCompleto && (consultandoRota || !adjacente || partida.vencedor() != -1)) continue;
     PVector p = centroRegiao(a.a()), q = centroRegiao(a.b());
     boolean rota = ataque != null && adjacente && (ataque.origem() == a.a() || ataque.origem() == a.b());
     stroke(rota ? 0xff263d49 : adjacente ? 0xc0415359 : 0x50516268);
     strokeWeight(rota ? 1.8f : 0.9f);
     if (a.maritima()) linhaTracejada(p, q);
     else line(p.x, p.y, q.x, q.y);
-    if (rota || (adjacente && a.a() / 2 == a.b() / 2 && PVector.dist(p, q) > 42)) {
+    if (!consultandoRota && (rota || (adjacente && a.a() / 2 == a.b() / 2 && PVector.dist(p, q) > 42))) {
       custoNoMapa(a.custo(), (p.x + q.x) / 2, (p.y + q.y) / 2);
     }
   }
@@ -124,8 +126,9 @@ void desenharMapa(Partida.Quadro quadro, Partida.Acao ataque) {
     fill(0xff51666b);
     circle(l[0], l[1], 3.3f);
   }
+  if (consultandoRota && rotaConsultada != null) desenharMenorRota(rotaConsultada);
   int norte = (regiaoFoco / 2) * 2;
-  if (quadro.dono(norte) == norte / 2 && partida.vencedor() == -1) {
+  if (!consultandoRota && quadro.dono(norte) == norte / 2 && partida.vencedor() == -1) {
     if (PVector.dist(centroRegiao(norte), centroRegiao(norte + 1)) >= 22) {
       desenharMarca(regiaoFoco == norte ? norte + 1 : norte);
     }
@@ -152,6 +155,7 @@ void desenharMapa(Partida.Quadro quadro, Partida.Acao ataque) {
     text(nome, x, y);
   }
   popMatrix();
+  noClip();
 
   noFill();
   stroke(COR_LINHA);
@@ -160,7 +164,30 @@ void desenharMapa(Partida.Quadro quadro, Partida.Acao ataque) {
   popStyle();
 }
 
-void atualizarCoresDoMapa(Partida.Quadro quadro) {
+void desenharMenorRota(Grafo.Rota rota) {
+  pushStyle();
+  for (int i = 1; i < rota.tamanho(); i++) {
+    PVector a = centroRegiao(rota.regiao(i - 1));
+    PVector b = centroRegiao(rota.regiao(i));
+    stroke(0xfffdfbf0);
+    strokeWeight(5);
+    line(a.x, a.y, b.x, b.y);
+    stroke(0xff91361f);
+    strokeWeight(2.7f);
+    line(a.x, a.y, b.x, b.y);
+  }
+  for (int i = 0; i < rota.tamanho(); i++) {
+    PVector ponto = centroRegiao(rota.regiao(i));
+    stroke(0xfffdfbf0);
+    strokeWeight(1.4f);
+    fill(0xff91361f);
+    boolean ponta = i == 0 || i == rota.tamanho() - 1;
+    circle(ponto.x, ponto.y, ponta ? 10 : 5);
+  }
+  popStyle();
+}
+
+void atualizarCoresDoMapa(Historico.Quadro quadro) {
   if (quadroDoMapa == quadro) return;
   quadroDoMapa = quadro;
   mapaBase.beginDraw();
