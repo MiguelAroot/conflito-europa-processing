@@ -66,7 +66,7 @@ public final class Evolucao {
     public Estrategia[] ativas() { return ativas.clone(); }
     public double melhorFitness(int pais) { return fitness[pais]; }
 
-    public void avancar(Partida partida, Partida.Estado estado) {
+    public void avancar(Partida partida, EstadoPartida estado) {
         // Mesmos adversários no teste
         Estrategia[] referencia = ativas();
         for (int pais = 0; pais < ativas.length; pais++) {
